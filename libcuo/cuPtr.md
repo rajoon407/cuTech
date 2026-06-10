@@ -1,11 +1,6 @@
 ### cuPtr(libcuo/cuPtr.h) 
 - CUBL 에서의 스마트 포인트 기능 
-
-
-#### 생성과 소멸 라이프 사이클 
-
-예 
-
+#### 생성과 소멸 라이프 사이클  
 - 메모리 릭 발생 
 ```
 {
@@ -25,6 +20,25 @@ class test
     cuStr  * pStr = new cuStr();
     cuPtr<cuStr> str = pStr;
     t.setData(str);   
+}
+```
+- 구역에서 생성하고 스마트 포인트를 통해 외부로 리턴 할 경우 어떡해 될까  
+  new 로 생성된 객체가 리턴 받았을 경우 실제 리퍼 카운트가 증가되었다가 감소 되었음을 확인 해야 한다.  
+  makeStr() 펑션 블럭이 될때   
+  리턴을 통해 리퍼 카운트가 증가된 후   
+  리퍼 카운트가 감소된다.    
+
+```
+cuPtr<cuStr> cuThread_test::makeStr()
+{
+	cuPtr<cuStr> str = new cuStr("111");
+	return str;  
+}
+
+cuThread_test::testPtr()
+{
+	cuStr<cuStr> v = makeStr(); 
+	prientf("%s", v.getCharPtr())
 }
 ```
 
