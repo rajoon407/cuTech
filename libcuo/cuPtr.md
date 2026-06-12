@@ -1,5 +1,13 @@
 ### cuPtr(libcuo/cuPtr.h) 
 - CUBL 에서의 스마트 포인트 기능 
+
+
+#### 유의 사항 
+##### cuPtr<T>& operator=(T* ptr)  와 cuPtr<T>& operator=(const bool lp)  오동작   
+- C++에서 대입 연산 시 의도치 않게 다른 객체가 bool로 변환되어 operator=(const bool lp) 함수로  
+  잘못 흘러 들어가는 현상은 실무에서 빈번히 발생하는 위험한 부작용(Side Effect)  
+  <b>받은 스마트 포인터의 T 객체형과 오른쪽 객체의 객체형을 일치 시키면 된다.</b>  
+
 #### 생성과 소멸 라이프 사이클  
 - 메모리 릭 발생 
 ```
