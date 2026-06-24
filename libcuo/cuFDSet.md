@@ -13,12 +13,15 @@ protected:
 	bool							m_bReady; 
 	cuPtr<cuVector>					m_RecvList;
 public:
-	virtual long      cuWait(long mmsec = 100000); // 100000ms = 100s
+	virtual long      cuWait(long mmsec = 100000); 
 };  
 ```
 
 
 #### libcuo/cuFDSet.cpp 일부  
+- 약간의 응용
+   - 궁극적인 방법은 종료 시점에 종료 처리 후 Resume() 하는 거지만  
+   타임아웃을 짧게 여러번 잡아 외부 상태 감지하도록 하여 한다.   
 
 ```
 long cuFDSet::cuWait(long mmsec)
@@ -30,7 +33,7 @@ long cuFDSet::cuWait(long mmsec)
 	int v = mmsec / CUNUM_FDSET_INTERVAL; 
     for (int i = 0; i < v; i++)
     {
-        m_cv.wait_for(lock, std::chrono::milliseconds(CUNUM_FDSET_INTERVAL), [this] (){
+        m_cv.wait_for(lock, .... [this] (){
 			return m_RecvList.size() > 0 || m_bReady; });
 		if (m_bReady || m_RecvList.size() > 0) 
 		{
@@ -38,6 +41,9 @@ long cuFDSet::cuWait(long mmsec)
 			m_bReady = false; 
 			return CU_WAIT_OK;
 		}
+
+		if(isStop())
+		   return CU_WAIT_FAIL; 
     }
     return CU_WAIT_TIMEOUT;
 }
@@ -82,6 +88,7 @@ long cuThread_test::_work()
 
 
 #### 활용 작업 요청 libtest/test_FDSet/cuThread_Action.cpp
+
 ```
 
 long	cuThread_CmdAction_Send::action(cuPtr<cuCmdResult> result, cuo* q, cuCmdS* pA)
